@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -90,7 +91,18 @@
   * {
     @apply border-border outline-ring/50;
   }
-  body {
+  html, body {
     @apply bg-background text-foreground;
+
+    @apply antialiased;
+    @apply text-sm;
+    @apply font-sans;
+    @apply text-foreground;
+    @apply bg-background;
+    @apply h-full;
+  }
+
+  body {
+    @apply p-2;
   }
 }
