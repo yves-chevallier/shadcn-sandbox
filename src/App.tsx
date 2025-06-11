@@ -1,6 +1,7 @@
 import { Button } from './components/ui/button'
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+
 import {
   Sheet,
   SheetClose,
@@ -11,7 +12,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-
+import Layout from "@/layout"
 export function SheetDemo() {
   return (
     <Sheet>
@@ -47,10 +48,12 @@ export function SheetDemo() {
 }
 
 function App() {
-   return (<>
-   <SheetDemo />
+
+   return (
+    <Layout>
    <Button variant="destructive">Destructive</Button>
-   </>)
+   </Layout>
+   )
 }
 
 export default App
