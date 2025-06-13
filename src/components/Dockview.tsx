@@ -1,10 +1,8 @@
-import {
-  DockviewReact,
-  DockviewApi,
-  type DockviewReadyEvent,
-} from "dockview";
+import { DockviewReact, DockviewApi, type DockviewReadyEvent } from "dockview";
 import { useState, useEffect } from "react";
 import { DefaultPanel } from "@/components/DefaultPanel";
+import { Tab } from "@/components/controls";
+import { Bookmark, Calculator, Carrot, ChefHat } from "lucide-react";
 
 const components = {
   default: DefaultPanel,
@@ -18,6 +16,10 @@ export function Dockview() {
     api.addPanel({
       id: "panel_1",
       component: "default",
+      params: {
+        title: "Panel 1",
+        icon: Bookmark,
+      },
     });
 
     api.addPanel({
@@ -26,6 +28,10 @@ export function Dockview() {
       position: {
         direction: "right",
         referencePanel: "panel_1",
+      },
+      params: {
+        title: "Panel 2",
+        icon: Calculator,
       },
     });
 
@@ -40,10 +46,18 @@ export function Dockview() {
     api.addPanel({
       id: "panel_4",
       component: "default",
+      params: {
+        title: "Panel 4",
+        icon: Carrot,
+      },
     });
     api.addPanel({
       id: "panel_5",
       component: "default",
+      params: {
+        title: "Panel 5",
+        icon: ChefHat,
+      },
     });
   }, [api]);
 
@@ -56,6 +70,7 @@ export function Dockview() {
     <DockviewReact
       className={"dockview-theme-abyss"}
       onReady={onReady}
+      defaultTabComponent={Tab}
       components={components}
     />
   );

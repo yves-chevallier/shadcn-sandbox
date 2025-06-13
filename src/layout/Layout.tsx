@@ -13,14 +13,18 @@ export default function Layout() {
     <SheetProvider>
       <ThemeProvider>
         <SidebarProvider>
-          <AppSidebar />
-          <main className="relative flex-1 overflow-auto transition-all duration-200 ease-in-out h-screen">
-            <HeaderBar />
-          <Dockview />
-        </main>
-      </SidebarProvider>
-      <GlobalSheet />
-    </ThemeProvider>
+          <div className="flex h-screen w-screen overflow-hidden">
+            <AppSidebar />
+            <div className="relative overflow-auto flex flex-col flex-1">
+              <HeaderBar />
+              <main className="flex-1 overflow-auto">
+                <Dockview />
+              </main>
+            </div>
+          </div>
+          <GlobalSheet />
+        </SidebarProvider>
+      </ThemeProvider>
     </SheetProvider>
   );
 }
