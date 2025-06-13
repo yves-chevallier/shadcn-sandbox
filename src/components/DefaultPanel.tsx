@@ -1,6 +1,6 @@
 import { type IDockviewPanelProps } from "dockview";
 import { Button } from "@/components/ui/button";
-import { useSheet } from "@/providers/SheetProvider";
+import { useSheet } from "@/hooks/useSheet";
 import { Input } from "@/components/ui/input";
 
 function ProfileButton() {

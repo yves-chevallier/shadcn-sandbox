@@ -6,7 +6,7 @@ import {
   SheetTitle,
   SheetDescription,
 } from "@/components/ui/sheet";
-import { useSheet } from "@/providers/SheetProvider";
+import { useSheet } from "@/hooks/useSheet";
 
 export function GlobalSheet() {
   const { open, setOpen, content, title, description } = useSheet();

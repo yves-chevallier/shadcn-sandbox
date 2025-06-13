@@ -49,7 +49,7 @@ export function Dockview() {
 
   const onReady = (event: DockviewReadyEvent) => {
     setApi(event.api);
-    (window as any).dockview = event.api;
+    (window as unknown as Window).dockview = event.api;
   };
 
   return (
