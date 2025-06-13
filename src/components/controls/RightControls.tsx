@@ -58,12 +58,14 @@ export const RightControls = (props: IDockviewHeaderActionsProps) => {
 
   const maximize = () => {
     props.activePanel?.api.maximize();
+    setIsMaximized(true);
   };
 
   const minimize = () => {
     if (props.containerApi.hasMaximizedGroup()) {
       props.containerApi.exitMaximizedGroup();
     }
+    setIsMaximized(false);
   };
 
   return (
@@ -84,19 +86,19 @@ export const RightControls = (props: IDockviewHeaderActionsProps) => {
             strokeWidth={2}
             name="Split Vertically"
             onClick={splitVertically}
-            className="mr-2"
+            className="mr-2 size-5 hover:text-secondary-foreground cursor-pointer"
           />
           <Rows2
             size={20}
             strokeWidth={2}
             name="Split Horizontally"
             onClick={splitHorizontally}
-            className="mr-2"
+            className="mr-2 size-5 hover:text-secondary-foreground cursor-pointer"
           />
           <PictureInPicture2
             size={20}
             strokeWidth={2}
-            className="mr-2"
+            className="mr-2 size-5 hover:text-secondary-foreground cursor-pointer"
             onClick={setFloat}
           />
           {props.panels.length > 0 &&
@@ -106,7 +108,7 @@ export const RightControls = (props: IDockviewHeaderActionsProps) => {
                 strokeWidth={2}
                 name="Minimize"
                 onClick={minimize}
-                className="mr-2"
+                className="mr-2 size-5 hover:text-secondary-foreground cursor-pointer"
               />
             ) : (
               <Maximize2
@@ -114,7 +116,7 @@ export const RightControls = (props: IDockviewHeaderActionsProps) => {
                 strokeWidth={2}
                 name="Maximize"
                 onClick={maximize}
-                className="mr-2"
+                className="mr-2 size-5 hover:text-secondary-foreground cursor-pointer"
               />
             ))}
         </>
@@ -123,6 +125,7 @@ export const RightControls = (props: IDockviewHeaderActionsProps) => {
         size={20}
         strokeWidth={2}
         name="Close"
+        className="size-5 hover:text-red-500 cursor-pointer"
         onClick={() => props.containerApi.removeGroup(props.group)}
       />
     </div>

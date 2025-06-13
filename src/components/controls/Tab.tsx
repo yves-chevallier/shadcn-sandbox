@@ -88,7 +88,7 @@ export const Tab: React.FunctionComponent<IDockviewDefaultTabProps> = (
         {params.title || api.id}
         {params.settings && (
           <Settings
-            className="ml-2 size-5 hover:text-primary-500 cursor-pointer"
+            className="ml-2 size-5 hover:text-secondary-foreground cursor-pointer"
             onClick={() =>
               openSheet({
                 title: `Settings for ${params.title || api.id}`,

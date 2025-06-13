@@ -1,7 +1,7 @@
 import { DockviewReact, DockviewApi, type DockviewReadyEvent } from "dockview";
 import { useState, useEffect } from "react";
 import { DefaultPanel } from "@/components/DefaultPanel";
-import { Tab } from "@/components/controls";
+import { Tab, RightControls } from "@/components/controls";
 import { Bookmark, Calculator, Carrot, ChefHat } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
@@ -78,6 +78,7 @@ export function Dockview() {
       className={"dockview-theme-abyss"}
       onReady={onReady}
       defaultTabComponent={Tab}
+      rightHeaderActionsComponent={RightControls}
       components={components}
     />
   );
