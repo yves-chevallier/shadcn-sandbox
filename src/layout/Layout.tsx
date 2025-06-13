@@ -1,11 +1,11 @@
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/AppSidebar";
-import { HeaderBar } from "@/components/HeaderBar";
+import { AppSidebar } from "@/layout/AppSidebar";
+import { HeaderBar } from "@/layout/HeaderBar";
 import { Dockview } from "@/components/Dockview";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import "dockview/dist/styles/dockview.css";
 import { SheetProvider } from "@/providers/SheetProvider"
-import { GlobalSheet } from "@/components/GlobalSheet"
+import { GlobalSheet } from "@/layout/GlobalSheet"
 
 
 export default function Layout() {

@@ -1,6 +1,6 @@
 import { useState } from "react"
 import type { ReactNode } from "react"
-import { SheetContext } from "./SheetContext"
+import { SheetContext } from "@/contexts"
 
 export const SheetProvider = ({ children }: { children: ReactNode }) => {
   const [open, setOpen] = useState(false)

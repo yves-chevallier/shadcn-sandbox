@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { LogoHEIG } from "@/components/LogoHEIG";
+import { LogoHEIG } from "@/layout/LogoHEIG";
 import { useTheme } from "@/hooks/useTheme";
 import { Moon, Sun } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";

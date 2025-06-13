@@ -1,5 +1,5 @@
 import { useContext } from "react"
-import { SheetContext } from "@/providers/SheetContext"
+import { SheetContext } from "@/contexts"
 
 export function useSheet() {
   const context = useContext(SheetContext)
