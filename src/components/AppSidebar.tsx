@@ -9,7 +9,10 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarFooter,
 } from "@/components/ui/sidebar"
+
+import { SidebarTrigger } from "@/components/ui/sidebar"
 
 // Menu items.
 const items = [
@@ -47,6 +50,7 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
+
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
@@ -61,6 +65,9 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+    <SidebarFooter className="mt-auto">
+      <SidebarTrigger className="flex ml-auto justify-end p-2"/>
+    </SidebarFooter>
       </SidebarContent>
     </Sidebar>
   )
