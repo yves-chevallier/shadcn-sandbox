@@ -121,7 +121,6 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -134,23 +133,10 @@
     @apply border-border outline-ring/50;
   }
   html, body {
-    @apply bg-background text-foreground;
-
-    @apply antialiased;
-    @apply text-sm;
-    @apply font-sans;
-    @apply text-foreground;
-    @apply bg-background;
-    @apply h-full;
+    @apply bg-background text-foreground antialiased text-sm font-sans h-full;
   }
 }
 
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+.dv-sash {
+  z-index: 10 !important;
 }

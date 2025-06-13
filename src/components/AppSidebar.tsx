@@ -48,9 +48,8 @@ export function AppSidebar() {
     <Sidebar collapsible="icon" variant="inset" className="peer">
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarGroupLabel>Widgets</SidebarGroupLabel>
           <SidebarGroupContent>
-
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>

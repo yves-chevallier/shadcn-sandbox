@@ -5,18 +5,20 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { LogoHEIG } from "@/components/LogoHEIG"
 import { useTheme } from '@/hooks/useTheme';
 import { Moon, Sun } from 'lucide-react';
+import { useSidebar } from "@/components/ui/sidebar"
 export function HeaderBar() {
   const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
   const { theme, toggleTheme } = useTheme();
-
+const { isMobile, setOpenMobile } = useSidebar()
   return (
 <header className="w-full h-16 border-b bg-background text-foreground px-4 flex items-center justify-between">
   <div className="flex items-center gap-4">
-    <LogoHEIG />
+    <LogoHEIG onClick={() => setOpenMobile(true)}
+      aria-label="Ouvrir le menu"/>
     <div className="text-lg font-semibold">Motion UI</div>
   </div>
   <div className="flex items-center gap-4">
-    <Input placeholder="Rechercher..." className="w-64" />
+    <Input placeholder="Rechercher..." className="w-64 hidden sm:block" />
     <Button variant="outline">Connexion</Button>
     <Avatar>
       <AvatarImage src="/avatar.jpg" />
