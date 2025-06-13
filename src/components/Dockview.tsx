@@ -2,25 +2,12 @@ import {
   DockviewReact,
   DockviewApi,
   type DockviewReadyEvent,
-  type IDockviewPanelProps,
 } from "dockview";
-import { Button } from "@/components/ui/button";
-import { SheetTrigger } from "@/components/ui/sheet";
 import { useState, useEffect } from "react";
-
-const Default = (props: IDockviewPanelProps) => {
-  return (
-    <div className="p-2">
-      {props.api.title}
-      <SheetTrigger asChild>
-        <Button variant="secondary">Open</Button>
-      </SheetTrigger>
-    </div>
-  );
-};
+import { DefaultPanel } from "@/components/DefaultPanel";
 
 const components = {
-  default: Default,
+  default: DefaultPanel,
 };
 
 export function Dockview() {
