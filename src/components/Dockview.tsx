@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { DefaultPanel } from "@/components/DefaultPanel";
 import { Tab } from "@/components/controls";
 import { Bookmark, Calculator, Carrot, ChefHat } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 const components = {
   default: DefaultPanel,
@@ -19,6 +20,12 @@ export function Dockview() {
       params: {
         title: "Panel 1",
         icon: Bookmark,
+        settings: (
+          <div className="space-y-4">
+            <Input placeholder="Nom" />
+            <Input placeholder="Email" />
+          </div>
+        ),
       },
     });
 
