@@ -3,13 +3,15 @@ import { AppSidebar } from "@/layout/AppSidebar";
 import { HeaderBar } from "@/layout/HeaderBar";
 import { Dockview } from "@/components/Dockview";
 import { ThemeProvider } from "@/providers/ThemeProvider";
-import "dockview/dist/styles/dockview.css";
 import { SheetProvider } from "@/providers/SheetProvider"
 import { GlobalSheet } from "@/layout/GlobalSheet"
+import { TooltipProvider } from "@/components/ui/tooltip";
 
+import "dockview/dist/styles/dockview.css";
 
 export default function Layout() {
   return (
+    <TooltipProvider>
     <SheetProvider>
       <ThemeProvider>
         <SidebarProvider>
@@ -26,5 +28,6 @@ export default function Layout() {
         </SidebarProvider>
       </ThemeProvider>
     </SheetProvider>
+    </TooltipProvider>
   );
 }

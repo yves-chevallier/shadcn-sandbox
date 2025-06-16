@@ -10,27 +10,25 @@ import {
   Maximize2,
 } from "lucide-react";
 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 export const RightControls = (props: IDockviewHeaderActionsProps) => {
   const [isMaximized, setIsMaximized] = React.useState<boolean>(
     props.containerApi.hasMaximizedGroup()
   );
 
-  const [isPopout, setIsPopout] = React.useState<boolean>(
-    props.api.location.type === "popout"
-  );
 
   React.useEffect(() => {
     const disposable = props.containerApi.onDidMaximizedGroupChange(() => {
       setIsMaximized(props.containerApi.hasMaximizedGroup());
     });
 
-    const disposable2 = props.api.onDidLocationChange(() => {
-      setIsPopout(props.api.location.type === "popout");
-    });
-
     return () => {
       disposable.dispose();
-      disposable2.dispose();
     };
   }, [props.containerApi]);
 
@@ -79,30 +77,49 @@ export const RightControls = (props: IDockviewHeaderActionsProps) => {
         color: "var(--dv-activegroup-hiddenpanel-tab-color)",
       }}
     >
-      {props.api.location.type == "grid" && (
+      {!isMaximized && props.api.location.type == "grid" && (
         <>
-          <Columns2
-            size={20}
-            strokeWidth={2}
-            name="Split Vertically"
-            onClick={splitVertically}
-            className="mr-2 size-5 hover:text-secondary-foreground cursor-pointer"
-          />
-          <Rows2
-            size={20}
-            strokeWidth={2}
-            name="Split Horizontally"
-            onClick={splitHorizontally}
-            className="mr-2 size-5 hover:text-secondary-foreground cursor-pointer"
-          />
-          <PictureInPicture2
-            size={20}
-            strokeWidth={2}
-            className="mr-2 size-5 hover:text-secondary-foreground cursor-pointer"
-            onClick={setFloat}
-          />
-          {props.panels.length > 0 &&
-            (isMaximized ? (
+          <Tooltip>
+            <TooltipTrigger>
+              <Columns2
+                size={20}
+                strokeWidth={2}
+                name="Split Vertically"
+                onClick={splitVertically}
+                className="mr-2 size-5 hover:text-secondary-foreground cursor-pointer"
+              />
+            </TooltipTrigger>
+            <TooltipContent>Split Vertically</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger>
+              <Rows2
+                size={20}
+                strokeWidth={2}
+                name="Split Horizontally"
+                onClick={splitHorizontally}
+                className="mr-2 size-5 hover:text-secondary-foreground cursor-pointer"
+              />
+            </TooltipTrigger>
+            <TooltipContent>Split Horizontally</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger>
+              <PictureInPicture2
+                size={20}
+                strokeWidth={2}
+                className="mr-2 size-5 hover:text-secondary-foreground cursor-pointer"
+                onClick={setFloat}
+              />
+            </TooltipTrigger>
+            <TooltipContent>Pop Out</TooltipContent>
+          </Tooltip>
+        </>
+      )}
+      {props.panels.length > 0 &&
+        (isMaximized ? (
+          <Tooltip>
+            <TooltipTrigger>
               <Minimize2
                 size={20}
                 strokeWidth={2}
@@ -110,7 +127,12 @@ export const RightControls = (props: IDockviewHeaderActionsProps) => {
                 onClick={minimize}
                 className="mr-2 size-5 hover:text-secondary-foreground cursor-pointer"
               />
-            ) : (
+            </TooltipTrigger>
+            <TooltipContent>Minimize Window</TooltipContent>
+          </Tooltip>
+        ) : (
+          <Tooltip>
+            <TooltipTrigger>
               <Maximize2
                 size={20}
                 strokeWidth={2}
@@ -118,16 +140,22 @@ export const RightControls = (props: IDockviewHeaderActionsProps) => {
                 onClick={maximize}
                 className="mr-2 size-5 hover:text-secondary-foreground cursor-pointer"
               />
-            ))}
-        </>
-      )}
-      <X
-        size={20}
-        strokeWidth={2}
-        name="Close"
-        className="size-5 hover:text-red-500 cursor-pointer"
-        onClick={() => props.containerApi.removeGroup(props.group)}
-      />
+            </TooltipTrigger>
+            <TooltipContent>Maximize Window</TooltipContent>
+          </Tooltip>
+        ))}
+      <Tooltip>
+        <TooltipTrigger>
+          <X
+            size={20}
+            strokeWidth={2}
+            name="Close"
+            className="size-5 hover:text-red-500 cursor-pointer"
+            onClick={() => props.containerApi.removeGroup(props.group)}
+          />
+        </TooltipTrigger>
+        <TooltipContent>Close Group</TooltipContent>
+      </Tooltip>
     </div>
   );
 };
