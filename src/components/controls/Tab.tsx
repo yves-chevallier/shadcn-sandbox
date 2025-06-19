@@ -24,6 +24,9 @@ export const Tab: React.FunctionComponent<IDockviewDefaultTabProps> = (
   const params = api.getParameters();
 
   const Icon = params?.icon || Bookmark;
+  const title = params?.title || api.id;
+  const SettingsComponent = params?.settings;
+
   const onClose = useCallback(
     (event: React.MouseEvent<HTMLSpanElement>) => {
       event.preventDefault();
@@ -78,17 +81,17 @@ export const Tab: React.FunctionComponent<IDockviewDefaultTabProps> = (
     >
       <span className="dv-default-tab-content flex items-center gap-1">
         <Icon size={20} className="" />
-        {params.title || api.id}
-        {params.settings && (
+        {title || api.id}
+        {SettingsComponent && (
           <Tooltip>
             <TooltipTrigger>
               <Settings
                 className="ml-2 size-5 hover:text-secondary-foreground cursor-pointer"
                 onClick={() =>
                   openSheet({
-                    title: `Settings for ${params.title || api.id}`,
+                    title: `Settings for ${title || api.id}`,
                     description: "Widget settings",
-                    content: params.settings,
+                    content: <SettingsComponent />,
                   })
                 }
               />

@@ -1,5 +1,3 @@
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
-
 import {
   Sidebar,
   SidebarContent,
@@ -10,38 +8,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarFooter,
-} from "@/components/ui/sidebar"
-
-import { SidebarTrigger } from "@/components/ui/sidebar"
-
-// Menu items.
-const items = [
-  {
-    title: "Home",
-    url: "#",
-    icon: Home,
-  },
-  {
-    title: "Inbox",
-    url: "#",
-    icon: Inbox,
-  },
-  {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
-  },
-  {
-    title: "Search",
-    url: "#",
-    icon: Search,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
-]
+} from "@/components/ui/sidebar";
+import { widgetRegistry } from "@/components/widgets";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export function AppSidebar() {
   return (
@@ -51,12 +20,12 @@ export function AppSidebar() {
           <SidebarGroupLabel>Widgets</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
+              {[...widgetRegistry.values()].map((widget) => (
+                <SidebarMenuItem key={widget.id}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
+                    <a href={`#${widget.id}`}>
+                      <widget.icon />
+                      <span>{widget.title}</span>
                     </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -64,10 +33,10 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-    <SidebarFooter className="mt-auto">
-      <SidebarTrigger className="flex ml-auto justify-end p-2"/>
-    </SidebarFooter>
+        <SidebarFooter className="mt-auto">
+          <SidebarTrigger className="flex ml-auto justify-end p-2" />
+        </SidebarFooter>
       </SidebarContent>
     </Sidebar>
-  )
+  );
 }

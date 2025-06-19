@@ -13,6 +13,7 @@ export function HeaderBar() {
   );
   const { toggleTheme } = useTheme();
   const { setOpenMobile } = useSidebar();
+
   return (
     <header className="w-full h-16 border-b bg-background text-foreground px-4 flex items-center justify-between">
       <div className="flex items-center gap-4">
