@@ -1,9 +1,9 @@
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/layout/AppSidebar";
-import { HeaderBar } from "@/layout/HeaderBar";
+import { AppSidebar } from "@/layout/Sidebar";
+import { HeaderBar } from "@/layout/Header";
 import { Dockview } from "@/components/Dockview";
 import { SheetProvider } from "@/providers/SheetProvider";
-import { GlobalSheet } from "@/layout/GlobalSheet";
+import { RightPanel } from "@/layout/RightPanel";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster, type ToasterProps } from "sonner";
 import { useTheme } from "@/hooks/useTheme";
@@ -26,7 +26,7 @@ export default function Layout() {
               </main>
             </div>
           </div>
-          <GlobalSheet />
+          <RightPanel />
           <Toaster richColors theme={theme as ToasterProps["theme"]} />
         </SidebarProvider>
       </SheetProvider>

@@ -10,6 +10,14 @@ export function Dockview() {
 
   useEffect(() => {
     if (!api) return;
+
+    const onDidAddPanel = api.onDidAddPanel((event) => {
+      console.log("Panel added:", event.id);
+    });
+    const onDidRemovePanel = api.onDidRemovePanel((event) => {
+      console.log("Panel removed:", event.id);
+    });
+
     const widget = widgetRegistry.get("clock");
     if (!widget) return;
     api.addPanel({
@@ -22,6 +30,11 @@ export function Dockview() {
       component: widget.id,
       title: widget.title,
     });
+
+    return () => {
+      onDidAddPanel.dispose();
+      onDidRemovePanel.dispose();
+    };
   }, [api]);
 
   const onReady = (event: DockviewReadyEvent) => {
