@@ -5,6 +5,8 @@ import { useState, useEffect, createContext, useContext } from "react";
 import type { FC } from "react";
 import "react-clock/dist/Clock.css";
 import "./clock.css";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const ClockContext = createContext<{
   label: string;
@@ -23,6 +25,9 @@ const InnerClockWidget: FC = () => {
     };
   }, []);
 
+  const notification = () => {
+    toast("Event has been created");
+  };
   return (
     <div className="p-2">
       <Clock
@@ -39,6 +44,7 @@ const InnerClockWidget: FC = () => {
         secondHandLength={75}
         secondHandWidth={3}
       />
+      <Button onClick={notification}>Notification</Button>
     </div>
   );
 };

@@ -1,7 +1,11 @@
 import Layout from "@/layout/Layout";
-
+import { ThemeProvider } from "@/providers/ThemeProvider";
 function App() {
-  return <Layout />;
+  return (
+    <ThemeProvider>
+      <Layout />
+    </ThemeProvider>
+  );
 }
 
 export default App;

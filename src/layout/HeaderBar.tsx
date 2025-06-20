@@ -4,8 +4,9 @@ import { useState } from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { LogoHEIG } from "@/layout/LogoHEIG";
 import { useTheme } from "@/hooks/useTheme";
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun, Power, PowerOff } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";
+import { useStore } from "@/hooks/useStore";
 
 export function HeaderBar() {
   const [isDark] = useState(() =>
@@ -13,6 +14,7 @@ export function HeaderBar() {
   );
   const { toggleTheme } = useTheme();
   const { setOpenMobile } = useSidebar();
+  const { connect, disconnect, connected } = useStore();
 
   return (
     <header className="w-full h-16 border-b bg-background text-foreground px-4 flex items-center justify-between">
@@ -25,7 +27,26 @@ export function HeaderBar() {
       </div>
       <div className="flex items-center gap-4">
         <Input placeholder="Rechercher..." className="w-64 hidden sm:block" />
-        <Button variant="outline">Connexion</Button>
+        <Button
+          onClick={connected ? disconnect : connect}
+          className={
+            connected
+              ? "bg-red-500 text-white hover:bg-red-600"
+              : "bg-green-500 text-white hover:bg-green-600"
+          }
+        >
+          {connected ? (
+            <>
+              <PowerOff />
+              {"Offline"}
+            </>
+          ) : (
+            <>
+              <Power />
+              {"Online"}
+            </>
+          )}
+        </Button>
         <Avatar>
           <AvatarImage src="/avatar.jpg" />
           <AvatarFallback>YT</AvatarFallback>
