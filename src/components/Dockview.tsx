@@ -18,18 +18,13 @@ export function Dockview() {
       console.log("Panel removed:", event.id);
     });
 
-    const widget = widgetRegistry.get("clock");
-    if (!widget) return;
-    api.addPanel({
-      id: widget.id,
-      component: widget.id,
-      title: widget.title,
-    });
-    api.addPanel({
-      id: `${widget.id}1`,
-      component: widget.id,
-      title: widget.title,
-    });
+    for (const [id, widget] of widgetRegistry.entries()) {
+      api.addPanel({
+        id: id,
+        component: id,
+        title: widget.title,
+      });
+    }
 
     return () => {
       onDidAddPanel.dispose();

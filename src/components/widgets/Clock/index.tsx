@@ -14,7 +14,7 @@ const ClockContext = createContext<{
 } | null>(null);
 
 const InnerClockWidget: FC = () => {
-  const ctx = useContext(ClockContext);
+  //const ctx = useContext(ClockContext);
   const [value, setValue] = useState(new Date());
 
   useEffect(() => {

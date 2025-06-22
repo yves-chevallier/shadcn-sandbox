@@ -18,20 +18,20 @@ export const useStore = create<State>((set, get) => {
         values: {},
 
         connect: () => {
-            set({ connected: true });
-            // wsManager.setStatusCallback((status) => {
-            //     set({ connected: status === 'open' });
-            // });
+            // set({ connected: true });
+            wsManager.setStatusCallback((status) => {
+                set({ connected: status === 'open' });
+            });
 
-            // wsManager.connect('ws://localhost:8000/ws');
+            wsManager.connect('ws://localhost:5173/ws/echo');
 
-            // unsubscribeSdo = wsManager.onMessage<Record<number, unknown>>('sdo', (payload) => {
-            //     set((state) => ({
-            //         values: { ...state.values, ...payload },
-            //     }));
-            // });
+            unsubscribeSdo = wsManager.onMessage<Record<number, unknown>>('sdo', (payload) => {
+                set((state) => ({
+                    values: { ...state.values, ...payload },
+                }));
+            });
 
-            // wsManager.send({ connect: true });
+            wsManager.send({ connect: true });
         },
 
         disconnect: () => {
