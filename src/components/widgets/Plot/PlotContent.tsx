@@ -78,6 +78,36 @@ export const PlotContent: React.FC<WidgetPanelProps> = ({ api }) => {
     return destroy;
   }, [createPlot]);
 
+  useEffect(() => {
+    const plot = plotRef.current;
+    if (!plot) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      // Force pause
+      pausedRef.current = true;
+      setPaused(true);
+
+      const factor = e.deltaY < 0 ? 0.9 : 1.1;
+
+      const [xMin, xMax] = [plot.scales.x.min, plot.scales.x.max];
+
+      const center = (xMin + xMax) / 2;
+      const range = (xMax - xMin) * factor;
+
+      const newMin = center - range / 2;
+      const newMax = center + range / 2;
+
+      plot.setScale("x", { min: newMin, max: newMax });
+    };
+
+    plot.root.addEventListener("wheel", handleWheel, { passive: false });
+
+    return () => {
+      plot.root.removeEventListener("wheel", handleWheel);
+    };
+  }, []);
+
   // Mise à jour continue des données
   useEffect(() => {
     const start = performance.now();
