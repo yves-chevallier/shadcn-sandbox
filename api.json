@@ -1,0 +1,46 @@
+{
+    "type": "schema",
+    "request": [
+        {
+            "command": "connect",
+            "data": {
+                "node_id": 42
+            }
+        },
+        {
+            "command": "disconnect",
+            "data": {
+                "node_id": 42
+            }
+        },
+        {
+            "command": "pdo",
+            "data": {
+                "type": "async",
+                "objects": [
+                    "3333:01"
+                ]
+            }
+        },
+        {
+            "command": "subscribe",
+            "data": {
+                "interval": 1000,
+                "objects": [
+                    "2043:01",
+                    "2043:02"
+                ]
+            }
+        },
+        {
+            "command": "unsubscribe",
+            "data": {
+                "objects": [
+                    "2043:01",
+                    "2043:02"
+                ]
+            }
+        }
+    ],
+    "response": {}
+}

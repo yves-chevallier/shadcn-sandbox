@@ -3,25 +3,27 @@ import type { FC } from "react";
 import type { IDockviewPanelProps } from "dockview";
 import { useEffect, createElement } from "react";
 
-const modules = import.meta.glob<true, string, { default: WidgetDefinition }>(
-  "./**/*.tsx",
-  { eager: true }
-);
+const modules = {
+  ...import.meta.glob("./*/index.tsx", { eager: true }),
+  ...import.meta.glob("./*/index.ts", { eager: true }),
+} as Record<string, Record<string, WidgetDefinition>>;
 
 export const widgetRegistry = new Map<string, WidgetDefinition>();
 
 for (const [path, mod] of Object.entries(modules)) {
-  const widget = mod?.default;
+  const widgetEntry = Object.entries(mod).find(([k]) =>
+    k.endsWith("Widget")
+  );
 
-  if (!widget) {
-    console.warn(
-      `⚠️ Le fichier "${path}" n'a pas de widget par défaut exporté.`
-    );
+  if (!widgetEntry) {
+    console.warn(`⚠️ Aucun export nommé se terminant par “Widget” dans ${path}`);
     continue;
   }
 
+  const [name, widget] = widgetEntry;
+
   if (!widget.id) {
-    console.warn(`⚠️ Le widget dans "${path}" est invalide (pas de 'id').`);
+    console.warn(`⚠️ Le widget “${name}” dans "${path}" est invalide.`);
     continue;
   }
 
@@ -43,15 +45,16 @@ export function toDockviewComponents(): Record<
         definition: widget,
       };
 
-      // Inject metadata into Dockview panel API
+      const { title, icon, Settings } = widget;
+
       useEffect(() => {
-        props.api.setTitle(widget.title);
+        props.api.setTitle(title);
         props.api.updateParameters({
-          title: widget.title,
-          icon: widget.icon,
+          title,
+          icon,
           settings: widget.Settings?.SettingsComponent,
         });
-      }, []);
+      }, [props.api, title, icon, Settings]);
 
       return createElement(widget.Content, fullProps);
     };

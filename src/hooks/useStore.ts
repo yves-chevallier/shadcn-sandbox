@@ -35,13 +35,17 @@ export const useStore = create<State>((set, get) => {
         },
 
         disconnect: () => {
-            // unsubscribeSdo?.();
-            // wsManager.disconnect();
+            unsubscribeSdo?.();
+            wsManager.disconnect();
             set({ connected: false });
         },
 
         subscribe: (...ids: number[]) => {
             wsManager.send({ subscribe: ids });
+        },
+
+        getSubscribedValues: () => {
+            return Object.keys(get().values).map(Number);
         },
 
         unsubscribe: (...ids: number[]) => {
