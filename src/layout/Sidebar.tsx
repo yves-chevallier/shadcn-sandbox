@@ -22,7 +22,17 @@ export function AppSidebar() {
             <SidebarMenu>
               {[...widgetRegistry.values()].map((widget) => (
                 <SidebarMenuItem key={widget.id}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton
+                    asChild
+                    draggable
+                    onDragStart={(e) => {
+                      e.dataTransfer.setData(
+                        "application/x-widget-id",
+                        widget.id
+                      );
+                      e.dataTransfer.effectAllowed = "copy";
+                    }}
+                  >
                     <a href={`#${widget.id}`}>
                       <widget.icon />
                       <span>{widget.title}</span>
