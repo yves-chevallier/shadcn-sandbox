@@ -40,11 +40,62 @@ const ToolButton: React.FC<{
   );
 };
 
+/**  PanXPlugin : déplacement horizontal au bouton gauche  */
+function addPanX(u: uPlot) {
+  let dragging = false;
+  let startPx = 0;
+  let x0 = 0,
+    x1 = 0;
+
+  const relX = (e: MouseEvent) => e.clientX - u.bbox.left;
+
+  const onMouseDown = (e: MouseEvent): void => {
+    if (e.button !== 0) return; // gauche uniquement
+    dragging = true;
+
+    startPx = relX(e);
+    const { min = 0, max = 0 } = u.scales.x as Required<uPlot.Scale>;
+    x0 = min;
+    x1 = max;
+
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
+    u.root.style.cursor = "grabbing";
+  };
+
+  const onMouseMove = (e: MouseEvent): void => {
+    if (!dragging) return;
+
+    const dxPx = relX(e) - startPx;
+    const delta = u.posToVal(0, "x") - u.posToVal(dxPx, "x");
+
+    u.batch(() => {
+      u.setScale("x", { min: x0 + delta, max: x1 + delta });
+    });
+  };
+
+  const onMouseUp = (e: MouseEvent): void => {
+    if (e.button !== 0) return;
+    dragging = false;
+
+    window.removeEventListener("mousemove", onMouseMove);
+    window.removeEventListener("mouseup", onMouseUp);
+    u.root.style.cursor = "default";
+  };
+
+  u.root.addEventListener(
+    "mousedown",
+    onMouseDown as uPlot.Cursor.MouseListener
+  );
+}
+
 export const PlotContent: React.FC<WidgetPanelProps> = ({ api }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const legendRef = useRef<HTMLDivElement | null>(null);
+
   const plotRef = useRef<uPlot | null>(null);
 
-  const MAX_POINTS = 500;
+  const MAX_POINTS = 20000;
   const { theme } = useTheme();
   const [paused, setPaused] = useState(false);
   const pausedRef = useRef(false);
@@ -82,10 +133,51 @@ export const PlotContent: React.FC<WidgetPanelProps> = ({ api }) => {
           points: { space: 9, fill: chartColor2, size: 6 },
         },
       ],
-
+      legend: {
+        mount(_uPlot, el) {
+          legendRef.current?.appendChild(el);
+        },
+      },
       cursor: {
-        // Selection box (omni + adaptative)
+        // on conserve vos paramètres actuels
         drag: { x: true, y: true, uni: 50 },
+
+        // réécriture sélective des écouteurs souris
+        bind: {
+          mousedown(u, _targ, handler) {
+            return (e) => {
+              if (e.button === 2) {
+                handler(e); // zoom-select standard
+                u.root.style.cursor = "grabbing";
+              }
+            };
+          },
+
+          mousemove(_u, _targ, handler) {
+            return (e) => {
+              if (e.buttons === 2) handler(e);
+            };
+          },
+
+          mouseup(u, _targ, handler) {
+            return (e) => {
+              if (e.button === 2) {
+                handler(e);
+                u.root.style.cursor = "default";
+              }
+            };
+          },
+        } as uPlot.Cursor.Bind, // ← le cast qui lève l’ambiguïté
+      },
+
+      hooks: {
+        ready: [
+          (u) => {
+            // Disable right-click context menu
+            u.root.addEventListener("contextmenu", (e) => e.preventDefault());
+          },
+          (u) => addPanX(u),
+        ],
       },
       axes: [
         {
@@ -128,7 +220,7 @@ export const PlotContent: React.FC<WidgetPanelProps> = ({ api }) => {
 
     const destroy = createPlot();
 
-    plotRef.current?.setData(data);
+    (plotRef.current as uPlot | null)?.setData(data);
 
     return destroy;
   }, [theme, createPlot]);
@@ -198,6 +290,12 @@ export const PlotContent: React.FC<WidgetPanelProps> = ({ api }) => {
         dataRef.current = [newXs, newYs, newZs];
 
         plotRef.current?.setData(dataRef.current);
+        // const N = 500;
+        // const len = newXs.length;
+        // plotRef.current?.setScale("x", {
+        //   min: newXs[len - N],
+        //   max: newXs[len - 1],
+        // });
       }
 
       rafId = requestAnimationFrame(loop);
@@ -235,19 +333,41 @@ export const PlotContent: React.FC<WidgetPanelProps> = ({ api }) => {
   };
 
   return (
-    <div className="flex h-full w-full p-2 space-x-2">
-      <div ref={containerRef} className="flex-1 min-w-0  h-full" />
-      <div className="w-[30px] flex flex-col items-center justify-start gap-2">
-        <ToolButton
-          Icon={paused ? Play : Pause}
-          description={paused ? "Resume" : "Pause"}
-          onClick={togglePause}
-        />
-        <ToolButton Icon={Eraser} description="Clear buffer" onClick={clear} />
-        <ToolButton Icon={ZoomIn} description="Zoom In" onClick={() => {}} />
-        <ToolButton Icon={ZoomOut} description="Zoom Out" onClick={() => {}} />
-        <ToolButton Icon={Move} description="Move" onClick={() => {}} />
-        <ToolButton Icon={FileDown} description="Download" onClick={download} />
+    <div className="flex flex-col h-full w-full min-h-0">
+      {" "}
+      {/* ← ajout min-h-0 */}
+      <div className="flex flex-1 min-h-0 p-2 space-x-2">
+        {" "}
+        {/* ← idem */}
+        <div ref={containerRef} className="flex-1 min-w-0 h-full" />
+        <div className="w-[30px] flex flex-col items-center gap-2">
+          <ToolButton
+            Icon={paused ? Play : Pause}
+            description={paused ? "Resume" : "Pause"}
+            onClick={togglePause}
+          />
+          <ToolButton
+            Icon={Eraser}
+            description="Clear buffer"
+            onClick={clear}
+          />
+          <ToolButton Icon={ZoomIn} description="Zoom In" onClick={() => {}} />
+          <ToolButton
+            Icon={ZoomOut}
+            description="Zoom Out"
+            onClick={() => {}}
+          />
+          <ToolButton Icon={Move} description="Move" onClick={() => {}} />
+          <ToolButton
+            Icon={FileDown}
+            description="Download"
+            onClick={download}
+          />
+        </div>
+      </div>
+      <div className="mt-1 ml-2 h-8 flex-shrink-0 w-full border-t px-2 text-sm flex items-center">
+        Status&nbsp;: Ready.
+        <div ref={legendRef} className="ml-auto flex items-right"></div>
       </div>
     </div>
   );
