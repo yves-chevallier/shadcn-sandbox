@@ -3,6 +3,8 @@ import { cssVarToHex } from "./cssVarToHex";
 import uPlot from "uplot";
 import "uplot/dist/uPlot.min.css";
 import "./plot.css";
+import { useTheme } from "@/hooks/useTheme";
+
 import { Button } from "@/components/ui/button";
 import {
   ZoomIn,
@@ -41,8 +43,9 @@ const ToolButton: React.FC<{
 export const PlotContent: React.FC<WidgetPanelProps> = ({ api }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const plotRef = useRef<uPlot | null>(null);
-  const MAX_POINTS = 500;
 
+  const MAX_POINTS = 500;
+  const { theme } = useTheme();
   const [paused, setPaused] = useState(false);
   const pausedRef = useRef(false);
 
@@ -117,12 +120,18 @@ export const PlotContent: React.FC<WidgetPanelProps> = ({ api }) => {
     };
   }, [api]);
 
-  // Initialisation du graphique
   useEffect(() => {
-    if (!containerRef.current) return;
+    const data = dataRef.current;
+
+    plotRef.current?.destroy();
+    plotRef.current = null;
+
     const destroy = createPlot();
+
+    plotRef.current?.setData(data);
+
     return destroy;
-  }, [createPlot]);
+  }, [theme, createPlot]);
 
   useEffect(() => {
     const plot = plotRef.current;
