@@ -4,7 +4,7 @@ import uPlot from "uplot";
 import "uplot/dist/uPlot.min.css";
 import "./plot.css";
 import { useTheme } from "@/hooks/useTheme";
-
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   ZoomIn,
@@ -14,6 +14,8 @@ import {
   Play,
   Eraser,
   FileDown,
+  Eye,
+  EyeOff,
   type LucideIcon,
 } from "lucide-react";
 import type { WidgetPanelProps } from "@/lib/widgets";
@@ -22,6 +24,13 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const ToolButton: React.FC<{
   Icon: LucideIcon;
@@ -38,6 +47,13 @@ const ToolButton: React.FC<{
       <TooltipContent side="left">{description}</TooltipContent>
     </Tooltip>
   );
+};
+
+type LegendEntry = {
+  label: string;
+  value: string;
+  id: number;
+  visible: boolean;
 };
 
 /**  PanXPlugin : déplacement horizontal au bouton gauche  */
@@ -91,7 +107,7 @@ function addPanX(u: uPlot) {
 
 export const PlotContent: React.FC<WidgetPanelProps> = ({ api }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const legendRef = useRef<HTMLDivElement | null>(null);
+  const [legend, setLegend] = useState<LegendEntry[]>([]);
 
   const plotRef = useRef<uPlot | null>(null);
 
@@ -101,6 +117,24 @@ export const PlotContent: React.FC<WidgetPanelProps> = ({ api }) => {
   const pausedRef = useRef(false);
 
   const dataRef = useRef<[number[], number[], number[]]>([[], [], []]);
+
+  const updateLegend = useCallback((u: uPlot) => {
+    const idx = u.cursor.idx ?? null;
+
+    const next: LegendEntry[] = [];
+    for (let s = 1; s < u.series.length; s++) {
+      const serie = u.series[s];
+      const y = idx != null ? (u.data[s][idx] as number | null) : null;
+
+      next.push({
+        label: String(serie.label ?? `S${s}`),
+        value: y != null ? y.toFixed(3) : "", // badge reste, valeur muette
+        id: s,
+        visible: serie.show ?? true,
+      });
+    }
+    setLegend(next);
+  }, []);
 
   const createPlot = useCallback(() => {
     const container = containerRef.current;
@@ -134,40 +168,35 @@ export const PlotContent: React.FC<WidgetPanelProps> = ({ api }) => {
         },
       ],
       legend: {
-        mount(_uPlot, el) {
-          legendRef.current?.appendChild(el);
-        },
+        show: false,
       },
       cursor: {
-        // on conserve vos paramètres actuels
         drag: { x: true, y: true, uni: 50 },
 
-        // réécriture sélective des écouteurs souris
         bind: {
-          mousedown(u, _targ, handler) {
+          mousedown(u, _t, handler) {
             return (e) => {
               if (e.button === 2) {
-                handler(e); // zoom-select standard
+                // éventuelle custom-logic
                 u.root.style.cursor = "grabbing";
+                handler(e); // ← toujours déléguer à uPlot
               }
             };
           },
 
-          mousemove(_u, _targ, handler) {
+          mousemove(_u, _t, handler) {
             return (e) => {
-              if (e.buttons === 2) handler(e);
+              handler(e); // indispensable pour cursor.idx
             };
           },
 
-          mouseup(u, _targ, handler) {
+          mouseup(u, _t, handler) {
             return (e) => {
-              if (e.button === 2) {
-                handler(e);
-                u.root.style.cursor = "default";
-              }
+              handler(e);
+              if (e.button === 2) u.root.style.cursor = "default";
             };
           },
-        } as uPlot.Cursor.Bind, // ← le cast qui lève l’ambiguïté
+        } as uPlot.Cursor.Bind,
       },
 
       hooks: {
@@ -175,8 +204,10 @@ export const PlotContent: React.FC<WidgetPanelProps> = ({ api }) => {
           (u) => {
             // Disable right-click context menu
             u.root.addEventListener("contextmenu", (e) => e.preventDefault());
+            u.hooks.setCursor ??= [];
+            u.hooks.setCursor.push(updateLegend);
+            addPanX(u);
           },
-          (u) => addPanX(u),
         ],
       },
       axes: [
@@ -210,7 +241,7 @@ export const PlotContent: React.FC<WidgetPanelProps> = ({ api }) => {
       plotRef.current?.destroy();
       plotRef.current = null;
     };
-  }, [api]);
+  }, [api, updateLegend]);
 
   useEffect(() => {
     const data = dataRef.current;
@@ -332,6 +363,14 @@ export const PlotContent: React.FC<WidgetPanelProps> = ({ api }) => {
     URL.revokeObjectURL(url);
   };
 
+  const toggleSerie = (id: number) => {
+    console.log("toggleSerie", id);
+    const plot = plotRef.current;
+    if (!plot) return;
+    const current = plot.series[id].show ?? true;
+    plot.setSeries(id, { show: !current });
+  };
+
   return (
     <div className="flex flex-col h-full w-full min-h-0">
       {" "}
@@ -363,11 +402,97 @@ export const PlotContent: React.FC<WidgetPanelProps> = ({ api }) => {
             description="Download"
             onClick={download}
           />
+          <Popover>
+            <PopoverTrigger asChild>
+              <Eye className="w-4 h-4" />
+            </PopoverTrigger>
+            <PopoverContent className="w-80">
+              <div className="grid gap-4">
+                <div className="space-y-2">
+                  <h4 className="leading-none font-medium">Dimensions</h4>
+                  <p className="text-muted-foreground text-sm">
+                    Set the dimensions for the layer.
+                  </p>
+                </div>
+                <div className="grid gap-2">
+                  <div className="grid grid-cols-3 items-center gap-4">
+                    <Label htmlFor="width">Width</Label>
+                    <Input
+                      id="width"
+                      defaultValue="100%"
+                      className="col-span-2 h-8"
+                    />
+                  </div>
+                  <div className="grid grid-cols-3 items-center gap-4">
+                    <Label htmlFor="maxWidth">Max. width</Label>
+                    <Input
+                      id="maxWidth"
+                      defaultValue="300px"
+                      className="col-span-2 h-8"
+                    />
+                  </div>
+                  <div className="grid grid-cols-3 items-center gap-4">
+                    <Label htmlFor="height">Height</Label>
+                    <Input
+                      id="height"
+                      defaultValue="25px"
+                      className="col-span-2 h-8"
+                    />
+                  </div>
+                  <div className="grid grid-cols-3 items-center gap-4">
+                    <Label htmlFor="maxHeight">Max. height</Label>
+                    <Input
+                      id="maxHeight"
+                      defaultValue="none"
+                      className="col-span-2 h-8"
+                    />
+                  </div>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
-      <div className="mt-1 ml-2 h-8 flex-shrink-0 w-full border-t px-2 text-sm flex items-center">
+      <div className="p-2 pl-5 h-10 flex-shrink-0 w-full border-t px-2 text-sm flex items-center">
         Status&nbsp;: Ready.
-        <div ref={legendRef} className="ml-auto flex items-right"></div>
+        <div className="ml-auto flex items-center space-x-1">
+          {legend.map(({ label, value, id, visible }) => {
+            const varName = `--chart-${id + 1}`;
+            return (
+              <Badge
+                key={label}
+                variant="outline"
+                className="border ml-1 px-1.5 text-sm flex items-center"
+                style={{
+                  borderColor: `var(${varName})`,
+                  backgroundColor: `color-mix(in srgb, var(${varName}) 18%, transparent)`,
+                  opacity: visible ? 1 : 0.35, // visuel « masqué »
+                }}
+              >
+                <span
+                  className="inline-block w-2 h-2 rounded-sm mr-1"
+                  style={{ backgroundColor: `var(${varName})` }}
+                />
+                <span className="tabular-nums mr-1">
+                  {label} {value}
+                </span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation(); // évite de cliquer sur le badge
+                    toggleSerie(id);
+                  }}
+                  className="ml-1 flex items-center hover:opacity-80 focus:outline-none"
+                >
+                  {visible ? (
+                    <Eye className="w-4 h-4" />
+                  ) : (
+                    <EyeOff className="w-4 h-4" />
+                  )}
+                </button>
+              </Badge>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
