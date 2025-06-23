@@ -96,7 +96,7 @@ export const Tab: React.FunctionComponent<IDockviewDefaultTabProps> = (
                 }
               />
             </TooltipTrigger>
-            <TooltipContent>Widget Settings</TooltipContent>
+            <TooltipContent side="bottom">Widget Settings</TooltipContent>
           </Tooltip>
         )}
         {!props.hideClose && props.tabLocation !== "headerOverflow" && (
@@ -110,7 +110,7 @@ export const Tab: React.FunctionComponent<IDockviewDefaultTabProps> = (
                 <X size={15} />
               </div>
             </TooltipTrigger>
-            <TooltipContent side="top" sideOffset={4}>
+            <TooltipContent side="bottom" sideOffset={4}>
               Close Widget
             </TooltipContent>
           </Tooltip>

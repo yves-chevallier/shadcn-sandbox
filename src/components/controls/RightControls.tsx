@@ -21,7 +21,6 @@ export const RightControls = (props: IDockviewHeaderActionsProps) => {
     props.containerApi.hasMaximizedGroup()
   );
 
-
   React.useEffect(() => {
     const disposable = props.containerApi.onDidMaximizedGroupChange(() => {
       setIsMaximized(props.containerApi.hasMaximizedGroup());
@@ -89,7 +88,7 @@ export const RightControls = (props: IDockviewHeaderActionsProps) => {
                 className="mr-2 size-5 hover:text-secondary-foreground cursor-pointer"
               />
             </TooltipTrigger>
-            <TooltipContent>Split Vertically</TooltipContent>
+            <TooltipContent side="bottom">Split Vertically</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger>
@@ -101,7 +100,7 @@ export const RightControls = (props: IDockviewHeaderActionsProps) => {
                 className="mr-2 size-5 hover:text-secondary-foreground cursor-pointer"
               />
             </TooltipTrigger>
-            <TooltipContent>Split Horizontally</TooltipContent>
+            <TooltipContent side="bottom">Split Horizontally</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger>
@@ -112,7 +111,7 @@ export const RightControls = (props: IDockviewHeaderActionsProps) => {
                 onClick={setFloat}
               />
             </TooltipTrigger>
-            <TooltipContent>Pop Out</TooltipContent>
+            <TooltipContent side="bottom">Pop Out</TooltipContent>
           </Tooltip>
         </>
       )}
@@ -128,7 +127,7 @@ export const RightControls = (props: IDockviewHeaderActionsProps) => {
                 className="mr-2 size-5 hover:text-secondary-foreground cursor-pointer"
               />
             </TooltipTrigger>
-            <TooltipContent>Minimize Window</TooltipContent>
+            <TooltipContent side="bottom">Minimize Window</TooltipContent>
           </Tooltip>
         ) : (
           <Tooltip>
@@ -141,7 +140,7 @@ export const RightControls = (props: IDockviewHeaderActionsProps) => {
                 className="mr-2 size-5 hover:text-secondary-foreground cursor-pointer"
               />
             </TooltipTrigger>
-            <TooltipContent>Maximize Window</TooltipContent>
+            <TooltipContent side="bottom">Maximize Window</TooltipContent>
           </Tooltip>
         ))}
       <Tooltip>
@@ -154,7 +153,7 @@ export const RightControls = (props: IDockviewHeaderActionsProps) => {
             onClick={() => props.containerApi.removeGroup(props.group)}
           />
         </TooltipTrigger>
-        <TooltipContent>Close Group</TooltipContent>
+        <TooltipContent side="bottom">Close Group</TooltipContent>
       </Tooltip>
     </div>
   );

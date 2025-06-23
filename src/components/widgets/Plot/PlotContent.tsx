@@ -4,8 +4,39 @@ import uPlot from "uplot";
 import "uplot/dist/uPlot.min.css";
 import "./plot.css";
 import { Button } from "@/components/ui/button";
-import { ZoomIn, ZoomOut, Move, Pause, Play, Eraser } from "lucide-react";
+import {
+  ZoomIn,
+  ZoomOut,
+  Move,
+  Pause,
+  Play,
+  Eraser,
+  FileDown,
+  type LucideIcon,
+} from "lucide-react";
 import type { WidgetPanelProps } from "@/lib/widgets";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
+const ToolButton: React.FC<{
+  Icon: LucideIcon;
+  description: string;
+  onClick: () => void;
+}> = ({ Icon, description, onClick }) => {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button variant="ghost" size="icon" className="p-1" onClick={onClick}>
+          <Icon className="w-4 h-4" />
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent side="left">{description}</TooltipContent>
+    </Tooltip>
+  );
+};
 
 export const PlotContent: React.FC<WidgetPanelProps> = ({ api }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -35,9 +66,24 @@ export const PlotContent: React.FC<WidgetPanelProps> = ({ api }) => {
       },
       series: [
         {},
-        { label: "Y", stroke: chartColor, width: 2 },
-        { label: "Z", stroke: chartColor2, width: 2 },
+        {
+          label: "Y",
+          stroke: chartColor,
+          width: 2,
+          points: { space: 9, fill: chartColor, size: 6 },
+        },
+        {
+          label: "Z",
+          stroke: chartColor2,
+          width: 2,
+          points: { space: 9, fill: chartColor2, size: 6 },
+        },
       ],
+
+      cursor: {
+        // Selection box (omni + adaptative)
+        drag: { x: true, y: true, uni: 50 },
+      },
       axes: [
         {
           stroke: axisColor,
@@ -84,21 +130,38 @@ export const PlotContent: React.FC<WidgetPanelProps> = ({ api }) => {
 
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
+
       // Force pause
       pausedRef.current = true;
       setPaused(true);
 
       const factor = e.deltaY < 0 ? 0.9 : 1.1;
+      const scales = plot.scales;
+      if (!scales) return;
 
-      const [xMin, xMax] = [plot.scales.x.min, plot.scales.x.max];
+      // CTRL key pressed → zoom on Y axis
+      if (e.ctrlKey) {
+        if (!scales.y?.min || !scales.y?.max) return;
 
-      const center = (xMin + xMax) / 2;
-      const range = (xMax - xMin) * factor;
+        const centerY = (scales.y.min + scales.y.max) / 2;
+        const rangeY = (scales.y.max - scales.y.min) * factor;
 
-      const newMin = center - range / 2;
-      const newMax = center + range / 2;
+        const newMinY = centerY - rangeY / 2;
+        const newMaxY = centerY + rangeY / 2;
 
-      plot.setScale("x", { min: newMin, max: newMax });
+        plot.setScale("y", { min: newMinY, max: newMaxY });
+      } else {
+        // Default: zoom on X axis
+        if (!scales.x?.min || !scales.x?.max) return;
+
+        const centerX = (scales.x.min + scales.x.max) / 2;
+        const rangeX = (scales.x.max - scales.x.min) * factor;
+
+        const newMinX = centerX - rangeX / 2;
+        const newMaxX = centerX + rangeX / 2;
+
+        plot.setScale("x", { min: newMinX, max: newMaxX });
+      }
     };
 
     plot.root.addEventListener("wheel", handleWheel, { passive: false });
@@ -146,34 +209,36 @@ export const PlotContent: React.FC<WidgetPanelProps> = ({ api }) => {
     dataRef.current = [[], [], []];
   };
 
+  const download = () => {
+    if (!plotRef.current) return;
+
+    const csvContent = dataRef.current.map((arr) => arr.join(",")).join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "plot_data.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="flex h-full w-full p-2 space-x-2">
       <div ref={containerRef} className="flex-1 min-w-0  h-full" />
       <div className="w-[30px] flex flex-col items-center justify-start gap-2">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="p-1"
+        <ToolButton
+          Icon={paused ? Play : Pause}
+          description={paused ? "Resume" : "Pause"}
           onClick={togglePause}
-        >
-          {paused ? (
-            <Play className="w-4 h-4" />
-          ) : (
-            <Pause className="w-4 h-4" />
-          )}
-        </Button>
-        <Button variant="ghost" size="icon" className="p-1" onClick={clear}>
-          <Eraser className="w-4 h-4" />
-        </Button>
-        <Button variant="ghost" size="icon" className="p-1">
-          <ZoomIn className="w-4 h-4" />
-        </Button>
-        <Button variant="ghost" size="icon" className="p-1">
-          <ZoomOut className="w-4 h-4" />
-        </Button>
-        <Button variant="ghost" size="icon" className="p-1">
-          <Move className="w-4 h-4" />
-        </Button>
+        />
+        <ToolButton Icon={Eraser} description="Clear buffer" onClick={clear} />
+        <ToolButton Icon={ZoomIn} description="Zoom In" onClick={() => {}} />
+        <ToolButton Icon={ZoomOut} description="Zoom Out" onClick={() => {}} />
+        <ToolButton Icon={Move} description="Move" onClick={() => {}} />
+        <ToolButton Icon={FileDown} description="Download" onClick={download} />
       </div>
     </div>
   );
