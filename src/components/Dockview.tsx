@@ -45,19 +45,25 @@ export function Dockview() {
     });
 
     const onDidAddPanel = api.onDidAddPanel((event) => {
-      console.log("Panel added:", event.id);
+      //console.log("Panel added:", event.id);
     });
     const onDidRemovePanel = api.onDidRemovePanel((event) => {
-      console.log("Panel removed:", event.id);
+      //console.log("Panel removed:", event.id);
     });
 
-    for (const [id, widget] of widgetRegistry.entries()) {
-      api.addPanel({
-        id: id,
-        component: id,
-        title: widget.title,
-      });
-    }
+    // for (const [id, widget] of widgetRegistry.entries()) {
+    //   api.addPanel({
+    //     id: id,
+    //     component: id,
+    //     title: widget.title,
+    //   });
+    // }
+    const w = widgetRegistry.get("plot");
+    api.addPanel({
+      id: w.id,
+      component: w.id,
+      title: w?.title,
+    });
 
     return () => {
       onDidAddPanel.dispose();
