@@ -5,11 +5,8 @@ import "uplot/dist/uPlot.min.css";
 import "./plot.css";
 import { useTheme } from "@/hooks/useTheme";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { formatTimeOutput, parseTimeInput } from "./utils";
 import {
-  ZoomIn,
-  ZoomOut,
-  Move,
   Pause,
   Play,
   Eraser,
@@ -18,14 +15,9 @@ import {
   MoveVertical,
   MoveHorizontal,
   EyeOff,
-  type LucideIcon,
 } from "lucide-react";
 import type { WidgetPanelProps } from "@/lib/widgets";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { ToolButton } from "./ToolButton";
 import {
   Popover,
   PopoverContent,
@@ -33,31 +25,6 @@ import {
 } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { set } from "zod";
-
-const ToolButton: React.FC<{
-  Icon: LucideIcon;
-  description: string;
-  onClick: () => void;
-  state?: boolean; // For toggle buttons
-  className?: string;
-}> = ({ Icon, description, onClick, state, className }) => {
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className={`p-1 ${state ? "bg-muted" : ""}`}
-          onClick={onClick}
-        >
-          <Icon className={`w-4 h-4  ${className}`} />
-        </Button>
-      </TooltipTrigger>
-      <TooltipContent side="left">{description}</TooltipContent>
-    </Tooltip>
-  );
-};
 
 type LegendEntry = {
   label: string;
@@ -65,35 +32,6 @@ type LegendEntry = {
   id: number;
   visible?: boolean;
 };
-
-function parseTimeInput(raw: string): number {
-  const trimmed = raw.trim().toLowerCase();
-
-  if (trimmed.endsWith("ms")) {
-    return parseFloat(trimmed.replace("ms", "")) / 1000;
-  }
-
-  if (trimmed.endsWith("us") || trimmed.endsWith("µs")) {
-    return parseFloat(trimmed.replace(/(us|µs)/, "")) / 1_000_000;
-  }
-
-  if (trimmed.endsWith("s")) {
-    return parseFloat(trimmed.replace("s", ""));
-  }
-
-  // fallback: assume seconds
-  return parseFloat(trimmed);
-}
-
-function formatTimeOutput(seconds: number): string {
-  if (seconds >= 1) {
-    return `${seconds.toFixed(2)} s`;
-  } else if (seconds >= 1e-3) {
-    return `${(seconds * 1e3).toFixed(1)} ms`;
-  } else {
-    return `${(seconds * 1e6).toFixed(0)} us`;
-  }
-}
 
 export const PlotContent: React.FC<WidgetPanelProps> = ({ api }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
